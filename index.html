@@ -9,45 +9,36 @@
                     <button id="takePhotoButton" disabled>Take Photo</button>
                     <canvas></canvas>
 
-                    <button class="" onclick="checkDevice({ facingMode: 'environment'})">Back Camera</button>
-                    <button class="" onclick="checkDevice({ facingMode: 'user'})">Front Camera</button>
+
         <script>
             document.querySelector('#takePhotoButton').addEventListener('click', onTakePhotoButtonClick);
             const input = document.querySelector('input[type="range"]');
 
                 var imageCapture;
 
-               navigator.getUserMedia = navigator.getUserMedia ||
-                         navigator.webkitGetUserMedia ||
-                         navigator.mozGetUserMedia;
+             navigator.mediaDevices.getUserMedia({video: { facingMode: "environment" }})
+                .then(mediaStream => {
+                  document.querySelector('video').srcObject = mediaStream;
+
+                  const track = mediaStream.getVideoTracks()[0];
+                  imageCapture = new ImageCapture(track);
+
+                  return imageCapture.getPhotoCapabilities();
+                })
+                .then(photoCapabilities => {
+                  const settings = imageCapture.track.getSettings();
+
+                  input.min = photoCapabilities.imageWidth.min;
+                  input.max = photoCapabilities.imageWidth.max;
+                  input.step = photoCapabilities.imageWidth.step;
+
+                  return imageCapture.getPhotoSettings();
+                })
+                .then(photoSettings => {
+                  input.value = photoSettings.imageWidth;
+                })
+                .catch(error => ChromeSamples.log('Argh!', error.name || error));
             
-                function checkDevice(camaraOptions) {
-                           navigator.mediaDevices.getUserMedia({video: camaraOptions})
-                             .then(mediaStream => {
-                              document.querySelector('video').srcObject = mediaStream;
-
-                              const track = mediaStream.getVideoTracks()[0];
-                              imageCapture = new ImageCapture(track);
-
-                              return imageCapture.getPhotoCapabilities();
-                            })
-                            .then(photoCapabilities => {
-                              const settings = imageCapture.track.getSettings();
-
-                              input.min = photoCapabilities.imageWidth.min;
-                              input.max = photoCapabilities.imageWidth.max;
-                              input.step = photoCapabilities.imageWidth.step;
-
-                              return imageCapture.getPhotoSettings();
-                            })
-                            .then(photoSettings => {
-                              input.value = photoSettings.imageWidth;
-                            })
-                            .catch(error => ChromeSamples.log('Argh!', error.name || error));
-                }
-                var camaraOptions = { facingMode: "environment"};
-                function checkDevice(camaraOptions);
-
                 function onTakePhotoButtonClick() {
                   imageCapture.takePhoto({imageWidth: input.value})
                   .then(blob => createImageBitmap(blob))
