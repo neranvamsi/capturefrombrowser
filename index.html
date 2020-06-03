@@ -20,7 +20,7 @@
                navigator.getUserMedia = navigator.getUserMedia ||
                          navigator.webkitGetUserMedia ||
                          navigator.mozGetUserMedia;
-                var camaraOptions;
+            
                 function checkDevice(camaraOptions) {
                            navigator.mediaDevices.getUserMedia({video: camaraOptions})
                              .then(mediaStream => {
@@ -45,7 +45,7 @@
                             })
                             .catch(error => ChromeSamples.log('Argh!', error.name || error));
                 }
-                camaraOptions = { facingMode: "environment"};
+                var camaraOptions = { facingMode: "environment"};
                 function checkDevice(camaraOptions);
 
                 function onTakePhotoButtonClick() {
