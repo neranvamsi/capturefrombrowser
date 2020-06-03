@@ -22,7 +22,7 @@
                          navigator.mozGetUserMedia;
                 var camaraOptions;
                 function checkDevice(camaraOptions) {
-                           navigator.mediaDevices.getUserMedia({video: { facingMode: "environment" }})
+                           navigator.mediaDevices.getUserMedia({video: camaraOptions})
                              .then(mediaStream => {
                               document.querySelector('video').srcObject = mediaStream;
 
